@@ -28,7 +28,7 @@
 				</br></br></br></br>
 				<h2>Your Projects...</h2>
 			</div>
-			<div id="listele">
+			<!--<div id="listele">
 				<div>
 				<ul id="items">
 					<li>
@@ -39,36 +39,31 @@
 					</li>
 				</ul>
 				</div>
-			</div>
-			<!--<div>
+			</div>-->
+			<div>
 			<div id="listele">
 				<div>
 				<ul id="items">
-				<%try
-				{
-					Class.forName("oracle.jdbc.driver.OracleDriver");
-					Connection connection=null;
-					connection =DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","pranith","pranith");
-					if (session == null || session.getAttribute("username") == null)
-						response.sendRedirect("index.html");
-					String username = (String)session.getAttribute("username");
-					Statement statement = connection.createStatement();
-					String sql="Select PROJECTID from MAINT where ROLLNO="+username;
-					ResultSet rs = statement.executeQuery(sql);
-					while(rs.next())
-					{
-						out.println("<li><a href='ViewProjects?param="+rs.getString(1)+"'>"+rs.getString(1)+"</a></li>");
-					}
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-				%>
+          <?php
+          session_start();
+          $dbhost = "localhost";
+          $dbuser = "pranith";
+          $dbpass = "pranith";
+          $conn = mysqli_connect($dbhost, $dbuser, $dbpass);
+          mysqli_select_db($conn, "student_portal");
+          $username = $_SESSION["username"];
+          $sql = "select PROJECTID from maint where ROLLNO='".$username."';";
+          $retval = mysqli_query($conn,$sql);
+          while(list($result) = mysqli_fetch_array($retval)){
+            ?>
+            <li><a href="download_myproject.php?name=<?php echo $result?>"><?php echo $result?></a></li>
+            <?php
+          }
+          ?>
 				</ul>
 				</div>
 			</div>
-		</div>-->
+		</div>
 	</div>
 	<div id="contents">
 		<div id="tagline" class="clearfix">
@@ -83,7 +78,7 @@
 					<li>
 						<h3>Serach through the Projects</h3>
 					</li>
-					<form method="get" action="ProjectList.jsp">
+					<form method="get" action="search.php">
 						<button type="submit" onclick="" style="width:auto;">Search</button>
 					</form>
 				</ul>
