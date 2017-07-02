@@ -1,4 +1,58 @@
-<!DOCTYPE HTML>
+<?php
+	if($_SERVER["REQUEST_METHOD"]=="POST"){
+		$dbhost = "localhost";
+		$dbuser = "pranith";
+		$dbpass = "pranith";
+		if($_POST["action"]=="login"){
+		  $username = $_POST["rollno"];
+		  $password = $_POST["pwd"];
+			$style1='"display:block"';
+		  $conn = mysqli_connect($dbhost, $dbuser, $dbpass);
+		  if(! $conn ){
+		    die("Could not connect: ".mysqli_error($conn));
+		  }
+		  //echo "Connected successfully<br/>";
+		  mysqli_select_db($conn, "student_portal");
+		  $sql = "select * from login where ROLLNO = '".$username."';";
+		  $retval = mysqli_query($conn, $sql);
+		  if(!$retval){
+		    die("Could not register".mysqli_error($conn));
+		  }
+		  $result = mysqli_fetch_array($retval);
+		  if($password==$result["PASSWORD"]){
+		    //$msg1 = "Login successful<br/>";
+				session_start();
+				$_SESSION["username"]=$username;
+				$_SESSION["password"]=$password;
+				header('Location:welcome.php');
+		  }
+		  else {
+		    $msg1 = "*Incorrect username or password<br/>";
+		  }
+		  mysqli_close($conn);
+		}
+		else if($_POST["action"]=="register"){
+		  $rollno = $_POST["rollno"];
+		  $name = $_POST["name"];
+		  $password = $_POST["psw"];
+			$style2='"display:block"';
+		  $conn = mysqli_connect($dbhost, $dbuser, $dbpass);
+		  if(! $conn ){
+		    die("Could not connect: ".mysqli_error($conn));
+		  }
+		  //echo "Connected successfully<br/>";
+		  mysqli_select_db($conn, "student_portal");
+		  $sql = "insert into login(NAME,PASSWORD,ROLLNO) values('".$name."','".$password."','".$rollno."');";
+		  $retval = mysqli_query($conn, $sql);
+		  if(!$retval){
+		    die("Could not register".mysqli_error($conn));
+		  }
+		  $msg2 = "Registered successfully";
+		  mysqli_close($conn);
+		}
+	}
+?>
+
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,13 +89,14 @@
 				</p>
 
 
-				<div id="id01" class="modal">
-					<form class="modal-content animate" method="post" action="login.php">
+				<div id="id01" class="modal" style=<?php echo $style1?>>
+					<form class="modal-content animate" method="post" action="<?php $PHP_SELF?>">
 						<div class="imgcontainer">
 							<span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
 						</div>
 
 						<div class="container">
+							<input type="hidden" name="action" value="login">
 							<label><b>Username</b></label>
 							<input type="text" placeholder="Enter Username" name="rollno" required>
 
@@ -49,6 +104,7 @@
 							<input type="password" placeholder="Enter Password" name="pwd" required>
 
 							<button type="submit">Login</button>
+							<?php echo $msg1?>
 							<input type="checkbox" checked="checked"> Remember me
 						</div>
 
@@ -58,13 +114,14 @@
 					</form>
 				</div>
 
-				<div id="id02" class="modal">
-					<form class="modal-content animate" method="post" action="register.php">
+				<div id="id02" class="modal" style=<?php echo $style2?>>
+					<form class="modal-content animate" method="post" action="<?php $PHP_SELF?>">
 						<div class="imgcontainer">
 							<span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
 						</div>
 
 						<div class="container">
+							<input type="hidden" name="action" value="register">
 							<label><b>Roll number</b></label>
 							<input type="text" placeholder="Enter your Roll number" name="rollno" required>
 
@@ -78,6 +135,7 @@
 							<input type="password" placeholder="Repeat Password" name="psw-repeat" required>
 
 							<button type="submit">Sign Up</button>
+							<?php echo $msg2?>
 						</div>
 
 						<div class="container" style="background-color:#f1f1f1">
